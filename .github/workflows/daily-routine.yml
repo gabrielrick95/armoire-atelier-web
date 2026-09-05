@@ -1,0 +1,23 @@
+name: Daily Routine Telegram Notification
+
+on:
+  schedule:
+    # 7h Brasilia (UTC-3) = 10h UTC
+    - cron: '0 10 * * *'
+  workflow_dispatch:
+
+jobs:
+  send-routine:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram message
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: "6408947203"
+        run: |
+          MESSAGE="☕ Rotina Diária - Armoire Atelier%0A%0A🌅 07:00 - Café da manhã%0A🏋️ 11:00 - Academia%0A🍽️ 13:00 - Almoço%0A💻 14:00 - Trabalho / Tráfego Pago%0A☕ 17:00 - Lanche%0A%0A📍 Goiânia | @armoireatelier%0A#rotina #produtividade"
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" \
+            -d parse_mode="Markdown" \
+            -d text="${MESSAGE}" \
+            | jq .
